@@ -21,6 +21,8 @@ sheet = client.open_by_url(sheet_url)
 token = "6770314577:AAExkccZRhRU5TZ924NBwTbP-ACY7EFldU0"
 
 already_done = set()
+
+
 def get_all_data(sheet_name: str):
     while True:
         try:
@@ -47,39 +49,34 @@ def send_message(chat_id, message):
 
 
 def scraper():
-    while True:
+    print("Checking for new vehicles")
 
-        print("Checking for new vehicles")
+    complete_data = get_all_data("Sheet1")
+    columns = complete_data[0]
+    df = pd.DataFrame(complete_data[1:], columns=columns)
 
-        complete_data = get_all_data("Sheet1")
-        columns = complete_data[0]
-        df = pd.DataFrame(complete_data[1:], columns=columns)
+    for index, single_row in df.iterrows():
+        if "www.subito.it" not in str(single_row["url"]):  # skip if url is not subito.it
+            continue
+        send_message(single_row["chat_id"], "Checking for new vehicles")
+        session = HTMLSession()
+        res = session.get(single_row["url"])
+        page_source = str(res.text)
 
-        for index, single_row in df.iterrows():
-            if "www.subito.it" not in str(single_row["url"]):  # skip if url is not subito.it
+        vehicle_names = String(xpath='//div/a//h2').parse_html(page_source)
+        vehicle_links = String(xpath='//div/a//h2/../../../../..', attr='href').parse_html(page_source)
+
+        for vehicle_name, vehicle_link in zip(vehicle_names, vehicle_links):
+            record = f"{vehicle_link}:{single_row['chat_id']}"
+            if record in list(already_done):
                 continue
-            send_message(single_row["chat_id"], "Checking for new vehicles")
-            session = HTMLSession()
-            res = session.get(single_row["url"])
-            page_source = str(res.text)
 
-            vehicle_names = String(xpath='//div/a//h2').parse_html(page_source)
-            vehicle_links = String(xpath='//div/a//h2/../../../../..', attr='href').parse_html(page_source)
+            send_message(single_row["chat_id"], f"Vehicle found: {vehicle_name} at {single_row['location']}")
 
-            for vehicle_name, vehicle_link in zip(vehicle_names, vehicle_links):
-                record = f"{vehicle_link}:{single_row['chat_id']}"
-                if record in list(already_done):
-                    continue
-
-                send_message(single_row["chat_id"], f"Vehicle found: {vehicle_name} at {single_row['location']}")
-
-                already_done.add(record)
+            already_done.add(record)
 
 
-        time.sleep(60 * 10)
-
-
-# FLASK APP
+# FLASK APP -
 app = Flask(__name__)
 
 
@@ -106,9 +103,15 @@ def index():
     }
 
     response = requests.request("GET", url, data=payload, headers=headers)
-    return jsonify({"Choo Choo": f"Welcome to your new 2 Flask app 🚅 {response.status_code}!"})
+    return jsonify({"Choo Choo": f"Welcome to your new Flask app 🚅 {response.status_code}!"})
+
+
+@app.route('/data', methods=['GET'])
+def scrape_data():
+    scraper()
+    return jsonify({"Choo Choo": f"Welcome to your scraper Flask app 🚅!"})
 
 
 if __name__ == '__main__':
-    threading.Thread(target=scraper).start()
+    # threading.Thread(target=scraper).start()
     app.run(debug=False, port=os.getenv("PORT", default=5000))
