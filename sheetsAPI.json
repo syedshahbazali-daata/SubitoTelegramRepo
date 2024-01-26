@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "newsfundingproject",
+  "private_key_id": "70ccbc8f3f6a9dc5e55a1b2405f7430e37c09ab0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC2embDOtb+IL9Q\nu1syW2HKsIMI6D8U5iAypflWWDpt2rrFW3rXvBSaewZkJIxtmZjy9Clpnsv7Ao4Z\ntYvanGocVaFflGWtnJw3mj7F6X4j7ScNW0L/etkYNVbZqVbIgeZ0bVd2Y4DxeEXd\ncylSHAmKCpfdPv4uiH2rbdlEK1A1aeRid81BP9/ffUlaoqW+mKgHnhb42rZT26LP\nsey8xysX0/Ejf2K49Lq7fTwqkLNDbeIfvNrjNoqtnn74hdkNrfm6ydBeVv9PSura\nY/M87kASMi77La8rYV5KUhRA6Z3BLqcxZQX5U+BEZqeZUUor5/U8o+ngReGmsSnB\nNsNZrdqZAgMBAAECggEAC2EDHvoAlZzHqVphk7iQltHeffPzmRNHnzjr3TdHv3l0\nC6IKfUD4fPCeg6imzB/XopDYs0IogKjWYSKJy9JUqJsrYrkvhP2+3RXEg9VtXQKp\nHINcIG/R8VlEJvMRGxREoW5/FX4beJNSMf7ALSNb8ex6r1yB/7dZtNK3CXH1ALuU\ne9kklPDbJyWNLQxC/Pc0lkUEPSDB3BuJX5e4FGqxYx92RJaDfdFhfKrGEcikyk36\nA4cFu90Cl6OVAJax468yBzmD9TTf8ZXvdlJDlQq7W9R51Pi8NjFwdkvwaK0NypI5\n0a/b8mErgLLioKWMjIeu8d1AbKGBejJveeamOmpKgQKBgQDhvFnl5yprbsWPeA3T\nBKZWcmKL5BrlkGTWHFgD33DguboouCasq9cBmWaYkGVThOrc0LRQaQXbU8H5l56L\nDJr8VDRxl6XC83Z2HjPS3lZ/9rti6ZgK5rHbojIXnwLKAbW6h45cEcUCL+uu9BK4\nswNrOqC9GXoTb2ow4vi0gCkhWQKBgQDO8V9iU9bWvYDY/vo8x58gpVcy73pUyfQ1\ngd/ThtPqIWkcBuIgOTE/iwci2tFWgf/EVWelR4N77b86LrMgMIUP8pWb/ogyOpsu\n2663GNZl6lUJ9jS9UE/Q2Y4lB2ocK1cC0AnlYh/byUFGEX5TM6DHPKXuQIdM4UKj\nl48vr3gbQQKBgAPfGxuaT1vwVmsTgAkydzfcVlxX2S4+v7v8WHYYivMPvGWeYutr\nNxDL9LqBH3vDN9P5sF4Arx0H3rfNJeb0nGPffdbE5w7k5g84jWL8dTdUn/oeT4FA\nW6SMr5dAHuggB2HfmU1y8JINCFnDzd5lE5XvN3qGyVUz//o+qk1ONWZhAoGAYnFg\nNp47bRvo11E0KQWtJRKCULCrOPp5OZr2puFUneQW5EZB+6I5U0kHtATz4Hsm+HbI\nP0+ttJ58gWkFvSJXqiZ0FSkYEQzgFYJbsq4WD5VRrtN4czZpQai8fdDxIUVctvHQ\nQ1ZSYXNzoalgtqOwsBahuJzpwCDIWpoWe1C1igECgYB4o0Z6TLbIc+MLvKtTzqLn\n2vPGsKz3T5ExuaB6cTYa3VT9heKhQE1PmmigQNFEEej6ROhlUO6F9YzIOGyG5c+q\nfPIvO5mqbyrd92H4XaV3MrpI0RYsZGt6Av/vJU1ukYgHWdzWcmFmR2/RlqqUfd0x\njXyUkqRDPQfd+7mQ4HwZFg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "newsfunding@newsfundingproject.iam.gserviceaccount.com",
+  "client_id": "110364207416191528230",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/newsfunding%40newsfundingproject.iam.gserviceaccount.com"
+}
