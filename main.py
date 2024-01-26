@@ -106,7 +106,7 @@ def index():
     }
 
     response = requests.request("GET", url, data=payload, headers=headers)
-    return jsonify({"Choo Choo": f"Welcome to your Flask app 🚅 {response.status_code}!"})
+    return jsonify({"Choo Choo": f"Welcome to your new Flask app 🚅 {response.status_code}!"})
 
 
 if __name__ == '__main__':
