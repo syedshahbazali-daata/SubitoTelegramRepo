@@ -20,7 +20,7 @@ sheet = client.open_by_url(sheet_url)
 
 token = "6770314577:AAExkccZRhRU5TZ924NBwTbP-ACY7EFldU0"
 
-
+already_done = set()
 def get_all_data(sheet_name: str):
     while True:
         try:
@@ -54,7 +54,7 @@ def scraper():
         complete_data = get_all_data("Sheet1")
         columns = complete_data[0]
         df = pd.DataFrame(complete_data[1:], columns=columns)
-        already_done = get_file_data("already-done.txt")
+
         for index, single_row in df.iterrows():
             if "www.subito.it" not in str(single_row["url"]):  # skip if url is not subito.it
                 continue
@@ -68,15 +68,15 @@ def scraper():
 
             for vehicle_name, vehicle_link in zip(vehicle_names, vehicle_links):
                 record = f"{vehicle_link}:{single_row['chat_id']}"
-                if record in already_done:
+                if record in list(already_done):
                     continue
 
                 send_message(single_row["chat_id"], f"Vehicle found: {vehicle_name} at {single_row['location']}")
 
-                with open("already-done.txt", "a", encoding="utf-8") as txt_file:
-                    txt_file.write(record + "\n")
+                already_done.add(record)
 
-        time.sleep(60 * 1)
+
+        time.sleep(60 * 10)
 
 
 # FLASK APP
@@ -106,7 +106,7 @@ def index():
     }
 
     response = requests.request("GET", url, data=payload, headers=headers)
-    return jsonify({"Choo Choo": f"Welcome to your new Flask app 🚅 {response.status_code}!"})
+    return jsonify({"Choo Choo": f"Welcome to your new 2 Flask app 🚅 {response.status_code}!"})
 
 
 if __name__ == '__main__':
