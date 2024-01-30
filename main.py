@@ -58,7 +58,7 @@ def scraper():
     for index, single_row in df.iterrows():
         if "www.subito.it" not in str(single_row["url"]):  # skip if url is not subito.it
             continue
-        send_message(single_row["chat_id"], "Checking for new vehicles")
+        # send_message(single_row["chat_id"], "Checking for new vehicles")
         session = HTMLSession()
         res = session.get(single_row["url"])
         page_source = str(res.text)
