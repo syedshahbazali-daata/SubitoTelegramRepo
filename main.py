@@ -25,6 +25,7 @@ sheet = client.open_by_url(sheet_url)
 
 token = "6770314577:AAExkccZRhRU5TZ924NBwTbP-ACY7EFldU0"
 
+last_update = [""]
 
 
 def get_all_data(sheet_name: str):
@@ -111,8 +112,10 @@ def scraper():
                 txt_file.write(f"{record}\n")
 
     # update last time with UTC time
-    
-    last_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    last_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    last_update[0] = last_time
+
     update_cell(1, 7, str(last_time), "Sheet1")
 
 
@@ -166,6 +169,10 @@ def scrape_data():
 
     return jsonify({"Choo Choo": f"Welcome to your new scraper Flask app 🚅!"})
 
+
+@app.route('/last-update', methods=['GET'])
+def last_update():
+    return jsonify({"last_update": last_update[0]})
 
 
 if __name__ == '__main__':
