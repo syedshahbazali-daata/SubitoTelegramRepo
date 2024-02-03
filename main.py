@@ -159,8 +159,8 @@ def scrape_data():
     # update last time with UTC time
 
     scraper()
-    last_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    update_cell(1, 7, str(last_time), "Sheet1")
+    last_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    update_cell(1, 2, str(last_time), "Sheet2")
 
     return jsonify({"Choo Choo": f"Welcome to your new scraper Flask app 🚅!"})
 
