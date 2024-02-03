@@ -80,6 +80,13 @@ def send_message(chat_id, message):
 def scraper():
     print("Checking for new vehicles")
 
+    # update last time with UTC time
+
+    last_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    last_update[0] = last_time
+
+    update_cell(1, 7, str(last_time), "Sheet1")
+
     complete_data = get_all_data("Sheet1")
     columns = complete_data[0]
     df = pd.DataFrame(complete_data[1:], columns=columns)
@@ -110,13 +117,6 @@ def scraper():
 
             with open("already-done.txt", "a", encoding="utf-8") as txt_file:
                 txt_file.write(f"{record}\n")
-
-    # update last time with UTC time
-
-    last_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    last_update[0] = last_time
-
-    update_cell(1, 7, str(last_time), "Sheet1")
 
 
 # FLASK APP -
