@@ -25,71 +25,95 @@ sheet = client.open_by_url(sheet_url)
 
 token = "6770314577:AAExkccZRhRU5TZ924NBwTbP-ACY7EFldU0"
 
-last_time = ""
 
 
 def get_all_data(sheet_name: str):
-  while True:
-    try:
-      data = sheet.worksheet(sheet_name).get_all_values()
-      time.sleep(1)
-      break
-    except:
-      time.sleep(10)
-      pass
-  return data
+    while True:
+        try:
+            data = sheet.worksheet(sheet_name).get_all_values()
+            time.sleep(1)
+            break
+        except:
+            time.sleep(10)
+            pass
+    return data
+
+
+def update_cell(row, col, value, sheet_name: str):
+    while True:
+        try:
+            sheet.worksheet(sheet_name).update_cell(row, col, value)
+            time.sleep(1)
+            break
+        except:
+            time.sleep(10)
+            pass
+    return None
+
+
+def get_cell(row, col, sheet_name: str):
+    while True:
+        try:
+            value = sheet.worksheet(sheet_name).cell(row, col).value
+            time.sleep(1)
+            return value
+        except:
+            time.sleep(10)
+            pass
+    return None
 
 
 def get_file_data(file_name):
-  with open(file_name, "r", encoding="utf-8") as txt_file:
-    data_file = txt_file.read().strip().split("\n")
-  return data_file
+    with open(file_name, "r", encoding="utf-8") as txt_file:
+        data_file = txt_file.read().strip().split("\n")
+    return data_file
 
 
 def send_message(chat_id, message):
-  url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}"
-  res = requests.get(url)
-  print(f"Message sent to {chat_id} with status code {res.status_code}")
-  return None
+    url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}"
+    res = requests.get(url)
+    print(f"Message sent to {chat_id} with status code {res.status_code}")
+    return None
 
 
 def scraper():
-  print("Checking for new vehicles")
+    print("Checking for new vehicles")
 
-  complete_data = get_all_data("Sheet1")
-  columns = complete_data[0]
-  df = pd.DataFrame(complete_data[1:], columns=columns)
+    complete_data = get_all_data("Sheet1")
+    columns = complete_data[0]
+    df = pd.DataFrame(complete_data[1:], columns=columns)
 
-  already_done = get_file_data("already-done.txt")
+    already_done = get_file_data("already-done.txt")
 
-  for index, single_row in df.iterrows():
-    if "www.subito.it" not in str(
-        single_row["url"]):  # skip if url is not subito.it
-      continue
-    send_message(single_row["chat_id"], "Checking for new vehicles")
-    session = HTMLSession()
-    res = session.get(single_row["url"])
-    page_source = str(res.text)
+    for index, single_row in df.iterrows():
+        if "www.subito.it" not in str(
+                single_row["url"]):  # skip if url is not subito.it
+            continue
+        # send_message(single_row["chat_id"], "Checking for new vehicles")
+        session = HTMLSession()
+        res = session.get(single_row["url"])
+        page_source = str(res.text)
 
-    vehicle_names = String(xpath='//div/a//h2').parse_html(page_source)
-    vehicle_links = String(xpath='//div/a//h2/../../../../..',
-                           attr='href').parse_html(page_source)
+        vehicle_names = String(xpath='//div/a//h2').parse_html(page_source)
+        vehicle_links = String(xpath='//div/a//h2/../../../../..',
+                               attr='href').parse_html(page_source)
 
-    for vehicle_name, vehicle_link in zip(vehicle_names, vehicle_links):
-      record = f"{vehicle_link}:{single_row['chat_id']}"
-      if record in list(already_done):
-        continue
+        for vehicle_name, vehicle_link in zip(vehicle_names, vehicle_links):
+            record = f"{vehicle_link}:{single_row['chat_id']}"
+            if record in list(already_done):
+                continue
 
-      send_message(
-          single_row["chat_id"],
-          f"Vehicle found: {vehicle_name} at {single_row['location']}")
+            send_message(
+                single_row["chat_id"],
+                f"Vehicle found: {vehicle_name}")
 
-      with open("already-done.txt", "a", encoding="utf-8") as txt_file:
-        txt_file.write(f"{record}\n")
+            with open("already-done.txt", "a", encoding="utf-8") as txt_file:
+                txt_file.write(f"{record}\n")
 
-  # update last time with UTC time
-  global last_time
-  last_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    # update last time with UTC time
+    
+    last_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    update_cell(1, 7, str(last_time), "Sheet1")
 
 
 # FLASK APP -
@@ -98,56 +122,52 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-  url = "https://www.subito.it/annunci-lazio/vendita/moto-e-scooter/roma"
-  payload = ""
-  headers = {
-      "authority":
-      "www.subito.it",
-      "accept":
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-      "accept-language":
-      "en,ur;q=0.9,en-GB;q=0.8,en-US;q=0.7",
-      "cache-control":
-      "max-age=0",
-      "device-memory":
-      "8",
-      "ect":
-      "4g",
-      "sec-ch-ua-mobile":
-      "?0",
-      "sec-fetch-dest":
-      "document",
-      "sec-fetch-mode":
-      "navigate",
-      "sec-fetch-site":
-      "none",
-      "sec-fetch-user":
-      "?1",
-      "upgrade-insecure-requests":
-      "1",
-      "user-agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-  }
+    url = "https://www.subito.it/annunci-lazio/vendita/moto-e-scooter/roma"
+    payload = ""
+    headers = {
+        "authority":
+            "www.subito.it",
+        "accept":
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language":
+            "en,ur;q=0.9,en-GB;q=0.8,en-US;q=0.7",
+        "cache-control":
+            "max-age=0",
+        "device-memory":
+            "8",
+        "ect":
+            "4g",
+        "sec-ch-ua-mobile":
+            "?0",
+        "sec-fetch-dest":
+            "document",
+        "sec-fetch-mode":
+            "navigate",
+        "sec-fetch-site":
+            "none",
+        "sec-fetch-user":
+            "?1",
+        "upgrade-insecure-requests":
+            "1",
+        "user-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
 
-  response = requests.request("GET", url, data=payload, headers=headers)
-  return jsonify({
-      "Choo Choo":
-      f"Welcome to your new Flask app 🚅 {response.status_code}!"
-  })
+    response = requests.request("GET", url, data=payload, headers=headers)
+    return jsonify({
+        "Choo Choo":
+            f"Welcome to your new Flask app 🚅 {response.status_code}!"
+    })
 
 
 @app.route('/data', methods=['GET'])
 def scrape_data():
-  scraper()
+    scraper()
 
-  return jsonify({"Choo Choo": f"Welcome to your scraper Flask app 🚅!"})
+    return jsonify({"Choo Choo": f"Welcome to your new scraper Flask app 🚅!"})
 
-
-@app.route('/last_time', methods=['GET'])
-def get_last_time():
-  return jsonify({"last_time": last_time})
 
 
 if __name__ == '__main__':
-  # threading.Thread(target=scraper).start()
-  app.run(debug=False, port=os.getenv("PORT", default=5000))
+    # threading.Thread(target=scraper).start()
+    app.run(debug=False, port=os.getenv("PORT", default=5000))
