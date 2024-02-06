@@ -199,7 +199,7 @@ def scrape_data():
     last_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     update_cell(1, 2, str(last_time), "Sheet2")
 
-    return jsonify({"Choo Choo": f"Welcome to your new scraper Flask app 🚅!"})
+    return jsonify({"Choo Choo": f"Welcome to your new x scraper Flask app 🚅!"})
 
 
 if __name__ == '__main__':
