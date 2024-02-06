@@ -38,6 +38,18 @@ def get_all_data(sheet_name: str):
     return data
 
 
+def insert_row(row, sheet_name: str):
+    while True:
+        try:
+            sheet.worksheet(sheet_name).append_row(row)
+            time.sleep(1)
+            break
+        except:
+            time.sleep(10)
+            pass
+    return None
+
+
 def update_cell(row, col, value, sheet_name: str):
     while True:
         try:
@@ -59,7 +71,6 @@ def get_cell(row, col, sheet_name: str):
         except:
             time.sleep(10)
             pass
-    return None
 
 
 def get_file_data(file_name):
@@ -79,17 +90,23 @@ def scraper():
     print("Checking for new vehicles")
 
     complete_data = get_all_data("Sheet1")
+    already_scraped_data = get_all_data("AlreadyScraped")
+
     columns = complete_data[0]
+    already_scraped_data_columns = already_scraped_data[0]
     df = pd.DataFrame(complete_data[1:], columns=columns)
+    already_scraped_df = pd.DataFrame(already_scraped_data[1:], columns=already_scraped_data_columns)
 
     already_done = get_file_data("already-done.txt")
 
+    session = HTMLSession()
     for index, single_row in df.iterrows():
         if "www.subito.it" not in str(
                 single_row["url"]):  # skip if url is not subito.it
             continue
+
         # send_message(single_row["chat_id"], "Checking for new vehicles")
-        session = HTMLSession()
+
         res = session.get(single_row["url"])
         page_source = str(res.text)
 
@@ -102,12 +119,32 @@ def scraper():
             if record in list(already_done):
                 continue
 
+            already_scraped_df_chat_ids = already_scraped_df["chat_id"].tolist()
+            already_scraped_df_chat_ids = [str(x).replace(".0", "") for x in already_scraped_df_chat_ids]
+            already_scraped_df_urls = already_scraped_df["url"].tolist()
+
+            if not str(single_row["chat_id"]).replace(".0", "") in already_scraped_df_chat_ids:
+                insert_row([single_row["chat_id"], vehicle_link], "AlreadyScraped")
+                print("Inserted new chat_id")
+                break
+
+            # check chat_id in already_scraped_df and get the url of that chat_id
+
+            last_url = already_scraped_df_urls[
+                already_scraped_df_chat_ids.index(str(single_row["chat_id"]).replace(".0", ""))]
+            if last_url == vehicle_link:
+                break
+
+            print(record)
+
+            #
             send_message(
                 single_row["chat_id"],
                 f"Vehicle found: {vehicle_name}")
 
-            with open("already-done.txt", "a", encoding="utf-8") as txt_file:
-                txt_file.write(f"{record}\n")
+            with open("already-done.txt", "a") as txt_file:
+                txt_file.write(record + "\n")
+    session.close()
 
 
 # FLASK APP -
